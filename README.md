@@ -2,11 +2,15 @@
 
 ## Objective
 ```
-webDisco Tool:
- 
-webDisco discovery tool to capture screenshot
-from a list of hosts & vhosts. Additionallty checks
-for common administrative interfaces and web server misconfigurations. 
+Web discovery tool to capture screenshots from a list of hosts & vhosts. 
+Requests are made via IP address and vhosts to determine differences.
+Additionallty checks for common administrative interfaces and web server 
+misconfigurations. 
+
+webDisco outputs two (2) HTML files:
+- File data.html displays sortable host and connection information with links to screenshots. 
+- File screenshots.html displays thumbnails of all screenshots. 
+All screenshots can be clicked through/viewed through a shadowbox viewer for quick viewing. 
 ```
 
 
@@ -42,7 +46,7 @@ optional arguments:
 ```
 Installation
 ---------------------------------------------------
-webDisco was tested on Ubuntu 12.04 and OSX Mavericks
+webDisco was tested on Ubuntu 14.04, Kali 1.0.9 and OS X Mavericks
 Requires wkhtmltoimage, which is part of the wkhtmltopdf package (http://wkhtmltopdf.org/)
 ----------- OSX -----------------------------------
 OSX Deps: pip install -U -r requirements.txt
@@ -53,7 +57,7 @@ Linux Deps: pip install -U -r requirements.txt
 
 ## Developing
 ```
-Alpha code under active development
+Project code under active development
 ```
 
 ## Contact
