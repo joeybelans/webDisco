@@ -8,12 +8,14 @@
 #
 # Installation
 # ---------------------------------------------------
-# webDisco was tested on Ubuntu 12.04 and OSX Mavericks
+# webDisco was tested on Ubuntu 14.04, Kali 1.0.9 and OS X Mavericks
+# Requires wkhtmltoimage, which is part of the wkhtmltopdf package (http://wkhtmltopdf.org/)
 # ----------- OSX -----------------------------------
 # OSX Deps: pip install -U -r requirements.txt
 # ----------- Linux ---------------------------------
 # Linux: sudo apt-get install python-pip
 # Linux Deps: pip install -U -r requirements.txt
+# ---------------------------------------------------
 
 
 import multiprocessing
