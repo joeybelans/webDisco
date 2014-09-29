@@ -51,12 +51,6 @@ Linux: sudo apt-get install python-pip
 Linux Deps: pip install -U -r environment.txt
 ```
 
-## Sample Run - CSV Output
-```
-
-
-```
-
 ## Developing
 ```
 Alpha code under active development
@@ -64,6 +58,6 @@ Alpha code under active development
 
 ## Contact
 ```
-# Authors: Joey Belans -- joeybelans[t.a]gmail[t.o.d]com
-#          Ryan Dorey -- ryandorey[t.a]gmail[t.o.d]com
+Authors: Joey Belans -- joeybelans[t.a]gmail[t.o.d]com
+         Ryan Dorey -- ryandorey[t.a]gmail[t.o.d]com
 ```
