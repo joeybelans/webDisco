@@ -13,7 +13,7 @@ for common administrative interfaces and web server misconfigurations.
 ## Usage
 ```
 $ ./webDisco.py -h
-usage: webDisco.py [-h] --targets TARGETS [--wkhtmltoimage WKHTMLTOIMAGE]
+usage: webdisco.py [-h] --targets TARGETS [--wkhtmltoimage WKHTMLTOIMAGE]
                    [--agent AGENT] [--topurls] [--maxprocesses MAXPROCESSES]
                    [--timeout TIMEOUT] [--output OUTPUT] [--proxy PROXY]
                    [--debug]
@@ -35,7 +35,7 @@ optional arguments:
   --timeout TIMEOUT     Javascript timeout <sec> (Default: 3)
   --output OUTPUT       Output directory
   --proxy PROXY         Proxy Host:Port (ex. 127.0.0.1:8080)
-  --debug               Increase verbosity
+  --debug               Increase verbosity in a single threaded fashion
 ```
 
 ## Installation
