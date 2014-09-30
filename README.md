@@ -13,8 +13,9 @@ webDisco outputs two (2) HTML files:
 All screenshots can be clicked through/viewed through a shadowbox viewer for quick viewing. 
 
 If using in conjunction with Lair (https://github.com/fishnetsecurity/Lair), there is a 
-Lair script available (https://github.com/fishnetsecurity/Lair-Browser-Scripts) to 
-export all IPs and and vhosts into appropriately formatted target list. 
+Lair script available (https://github.com/fishnetsecurity/Lair-Browser-Scripts/blob/
+master/generate_webdisco_target_list.js) to export all IPs and and vhosts into 
+appropriately formatted target list. 
 ```
 
 
