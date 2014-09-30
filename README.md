@@ -13,8 +13,9 @@ webDisco outputs two (2) HTML files:
 All screenshots can be clicked through/viewed through a shadowbox viewer for quick viewing. 
 
 If using in conjunction with Lair (https://github.com/fishnetsecurity/Lair), there is a 
-Lair script available (https://github.com/fishnetsecurity/Lair-Browser-Scripts) to 
-export all IPs and and vhosts into appropriately formatted target list. 
+Lair script available (https://github.com/fishnetsecurity/Lair-Browser-Scripts/blob/
+master/generate_webdisco_target_list.js) to export all IPs and and vhosts into 
+appropriately formatted target list. 
 ```
 
 
@@ -23,7 +24,7 @@ export all IPs and and vhosts into appropriately formatted target list.
 usage: webDisco.py [-h] --targets TARGETS [--wkhtmltoimage WKHTMLTOIMAGE]
                    [--agent AGENT] [--topurls] [--maxprocesses MAXPROCESSES]
                    [--timeout TIMEOUT] [--output OUTPUT] [--proxy PROXY]
-                   [--debug] [--single] [--version]
+                   [--debug] [--version]
 
 Yet another web discovery tool
 
@@ -43,7 +44,6 @@ optional arguments:
   --output OUTPUT       output directory
   --proxy PROXY         proxy Host:Port (ex. 127.0.0.1:8080)
   --debug               increase verbosity
-  --single              execute in a single threaded fashion
   --version             show program's version number and exit
 ```
 
