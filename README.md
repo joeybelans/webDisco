@@ -30,8 +30,13 @@ Yet another web discovery tool
 
 optional arguments:
   -h, --help            show this help message and exit
+<<<<<<< HEAD
+  --targets TARGETS     line delimited target file of CSV values (ex.
+                        <http|https>,<ip addr>,<port>,<hostname>)
+=======
   --targets TARGETS     file containing list of targets (ex.
                         http|https,ip,port,hostname)
+>>>>>>> 310d178247f4b5cfd2cbe7a8ad4dd8cb22cc4956
   --wkhtmltoimage WKHTMLTOIMAGE
                         full path to wkhtmltoimage binary (Default:
                         wkhtmltoimage)

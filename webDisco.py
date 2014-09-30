@@ -435,7 +435,7 @@ def generateScreenies(results, outDir, debug):
 def main():
    # Get the command line arguments
    parser = argparse.ArgumentParser(description='Yet another web discovery tool')
-   parser.add_argument('--targets', required=True, dest='targets', help='file containing list of targets (ex. http|https,ip,port,hostname)')
+   parser.add_argument('--targets', required=True, dest='targets', help='line delimited target file of CSV values (ex. <http|https>,<ip addr>,<port>,<hostname>)')
    parser.add_argument('--wkhtmltoimage', dest='wkhtmltoimage', default='wkhtmltoimage', help='full path to wkhtmltoimage binary (Default: wkhtmltoimage)')
    parser.add_argument('--agent', dest='agent', default='Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36', help='custom user agent (Default: Chrome on OS X)')
    parser.add_argument('--topurls', dest='topurls', default=False, action='store_true', help='check for existance of common administrative interfaces')
