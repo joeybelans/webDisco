@@ -437,9 +437,11 @@ def main():
    parser.add_argument('--timeout', dest='timeout', default=3, help='Javascript timeout <sec> (Default: 3)')
    parser.add_argument('--output', dest='output', default='webDisco', help='Output directory')
    parser.add_argument('--proxy', dest='proxy', help='Proxy Host:Port (ex. 127.0.0.1:8080)')
-   parser.add_argument('--debug', dest='debug', default=False, action='store_true', help='Increase verbosity in a single threaded fashion')
+   parser.add_argument('--debug', dest='debug', default=False, action='store_true', help='Increase verbosity')
+   parser.add_argument('--single', dest='single', default=False, action='store_true', help='Execute in a single threaded fashion')
+   parser.add_argument('--version', action='version', version='%(prog)s 0.1')
    args = parser.parse_args()
-   
+
    # Validate existance of "deps" directory
    if not os.path.isdir(sys.path[0] + '/deps'):
       print sys.path[0] + '/deps does not exist'
@@ -469,12 +471,11 @@ def main():
 
    # Process each target
    results = []
-   if args.debug:
+   if args.single:
       for target in targets:
          results.append(processTarget(target))
    else:
       pool = multiprocessing.Pool(args.maxprocesses)
-      #r = pool.map_async(processTarget, targets, callback=results.append)
       r = pool.map_async(processTarget, targets)
       try:
          results = r.get(0xFFFF)
