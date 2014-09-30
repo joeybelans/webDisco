@@ -73,9 +73,9 @@ def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout):
    urllib3.disable_warnings()
    try: 
       if len(proxies) == 0:
-         r = requests.get(protocol + "://" + ip + ":" + port + path, headers=headers, timeout=timeout, verify=False, allow_redirects=False)
+         r = requests.get(protocol + "://" + ip + ":" + port + path, headers=headers, timeout=timeout, verify=False, allow_redirects=True)
       else:
-         r = requests.get(protocol + "://" + ip + ":" + port + path, headers=headers, proxies=proxies, timeout=timeout, verify=False)
+         r = requests.get(protocol + "://" + ip + ":" + port + path, headers=headers, proxies=proxies, timeout=timeout, verify=False, allow_redirects=True)
    except:
       return {
          'status': 0,
@@ -88,26 +88,25 @@ def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout):
 
    # Create dictionary
    output = {
-	      'status': r.status_code,
+         'status': r.status_code,
          'server': '',
          'title': '',
          'content': '', 
          'auth': '',
          'redirectURL': ''
    }
+
    if 'server' in r.headers:
       output['server'] = r.headers['server']
    if 'www-authenticate' in r.headers:
       output['auth'] = r.headers['www-authenticate']
-   if 'location' in r.headers:
-      output['redirectURL'] = r.headers['location']
-   if 'content-location' in r.headers:
-      output['redirectURL'] = r.headers['content-location']
+   if len(r.history) > 0:
+      output['redirectURL'] = r.url
    if r.text:
       output['content'] = r.text[:500].decode("ascii", "ignore")
       soup = BeautifulSoup(r.text)
       try:
-         output['title'] = soup.find_all('title').contents[0].decode("ascii", "ignore")
+         output['title'] = soup.find('title').contents[0].decode("ascii", "ignore")
       except:
          pass
       if soup.find_all('input', {'type':'password'}):
@@ -117,34 +116,60 @@ def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout):
    return output
 
 # Checks for top interesting URLs
-def requestTopURLs(proxyurl, agent, protocol, ip, port, hostname, timeout):
+def requestTopURLs(proxyurl, agent, protocol, ip, port, hostname, timeout, redirectURL, wkhtml, outputDir):
    # List of URLs to be checked
    topURLs = [
-   "/CFIDE/", 
-   "/doesnotexist.aspx",
-   "/admin/",
-   "/admin-console/",
-   "/manager/",
-   "/robots.txt",
-   "/crossdomain.xml"
-   "/.svn/",
-   ".htaccess",
-   "/FCKeditor/",
-   "/axis2/",
-   "/axis2-admin/",
-   "/axis/",
-   "/axis-admin/",
-   "/phpmyadmin/"
+   '/CFIDE/', 
+   '/doesnotexist.aspx',
+   '/admin/',
+   '/admin-console/',
+   '/manager/',
+   '/robots.txt',
+   '/crossdomain.xml',
+   '/.svn/',
+   '/.htaccess',
+   '/FCKeditor/',
+   '/axis2/',
+   '/axis2-admin/',
+   '/axis/',
+   '/axis-admin/',
+   '/phpmyadmin/'
    ]
 
    # Initialize dictionary
    output = {}
 
    # Loop through each URL and record output
+   found = 0
+   other = 0
    for path in topURLs:
       tempOut = httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout)
+
       if (tempOut['status'] == 403 or (not (tempOut['status'] >= 400 and tempOut['status'] < 500)))  and tempOut['status'] != 0:
-         output[path] = tempOut
+         # Check for custom 404s
+         if tempOut['redirectURL'] == '' or tempOut['redirectURL'].split('?')[0] != redirectURL.split('?')[0]:
+            if tempOut['status'] == 200:
+               found += 1
+            else:
+               other += 1
+            output[path] = tempOut
+
+   # Check if all the same codes
+   if found == len(topURLs) or other == len(topURLs):
+      return {}
+
+   # Create screenshots
+   for path in output:
+      output[path]['screenshot'] = createScreenshot(
+               wkhtml,
+               proxyurl,
+               outputDir,
+               protocol,
+               ip,
+               port,
+               path,
+               hostname
+               )
 
    # Return the dictionary
    return output
@@ -154,7 +179,7 @@ def createScreenshot(wkhtmltoimage, proxyurl, outdir, protocol, ip, port, path, 
    name = ip + '.' + port
    if hostname != '':
       name = name + '-' + hostname
-   name = name + '.png'
+   name = name + '-' + path.lstrip('/').split('/')[0] + '.png'
 
    # Create screenshot
    cmd = wkhtmltoimage + ' --quiet'
@@ -169,67 +194,70 @@ def createScreenshot(wkhtmltoimage, proxyurl, outdir, protocol, ip, port, path, 
    return name
 
 def processTarget(params):
-   # Split the parameter tuple
-   target, args = params
+   try:
+      # Split the parameter tuple
+      target, args = params
 
-   # Parse the target line
-   protocol, ip, port, hostname = target.split(',')
+      # Parse the target line
+      protocol, ip, port, hostname = target.split(',')
 
-   # Initialize disco dictionary
-   disco = {
-   'target' : {
-	'protocol': protocol,
-	'ip': ip,
-	'port': port,
-	'hostname': hostname
-	 }
-   }
+      # Initialize disco dictionary
+      disco = {
+      'target' : {
+      'protocol': protocol,
+      'ip': ip,
+      'port': port,
+      'hostname': hostname
+       }
+      }
 
-   # Make initial request
-   if args.debug:
-      print "Initial target: " + target
-
-   path = '/'
-   disco['init'] = httpGET(args.proxy, args.agent, protocol, ip, port, path, hostname, args.timeout)
-   if disco['init']['status'] == 0:
+      # Make initial request
       if args.debug:
-         print "Target failed: " + target
-      disco['screenshot'] = ''
-      disco['topURLs'] = {}
+         print "Initial target: " + target
+
+      path = '/'
+      disco['init'] = httpGET(args.proxy, args.agent, protocol, ip, port, path, hostname, args.timeout)
+      if disco['init']['status'] == 0:
+         if args.debug:
+            print "Target failed: " + target
+         disco['screenshot'] = ''
+         disco['topURLs'] = {}
+         return disco
+
+      # Create screenshot image name
+      if args.debug:
+         print "Create screenshot: " + target
+
+      disco['screenshot'] = createScreenshot(
+      args.wkhtmltoimage,
+      args.proxy,
+      args.output,
+      disco['target']['protocol'],
+      disco['target']['ip'],
+      disco['target']['port'],
+      path,
+      disco['target']['hostname']
+      )
+
+      # Get top URLs
+      if args.topurls:
+         if args.debug:
+            print "Get top urls: " + target
+         disco["topURLs"] = requestTopURLs(args.proxy, args.agent, protocol, ip, port, hostname, args.timeout, disco['init']['redirectURL'], args.wkhtmltoimage, args.output)
+      else:
+         disco["topURLs"] = {}
+
+      # Status out
+      if hostname == '':
+         targetURL = "%s://%s:%s/" % (protocol, ip, port)
+      else:
+         targetURL = "%s://%s[%s]:%s/" % (protocol, hostname, ip, port)
+      print "Completed target: " + targetURL
+
+      # Return discovery info
       return disco
-
-   # Create screenshot image name
-   if args.debug:
-      print "Create screenshot: " + target
-
-   disco['screenshot'] = createScreenshot(
-	args.wkhtmltoimage,
-	args.proxy,
-	args.output,
-	disco['target']['protocol'],
-	disco['target']['ip'],
-	disco['target']['port'],
-	path,
-	disco['target']['hostname']
-   )
-
-   # Get top URLs
-   if args.topurls:
-      if args.debug:
-         print "Get top urls: " + target
-      disco["topURLs"] = requestTopURLs(args.proxy, args.agent, protocol, ip, port, hostname, args.timeout)
-   else:
-      disco["topURLs"] = {}
-
-   # Status out
-   if hostname == '':
-      targetURL = "%s://%s:%s/" % (protocol, ip, port)
-   else:
-      targetURL = "%s://%s[%s]:%s/" % (protocol, hostname, ip, port)
-   print "Completed target: " + targetURL
-
-   # Return discovery info
-   return disco
+   except KeyboardInterrupt, e:
+      return disco
 
 # Generate the final report
 def generateReport(results, outDir, debug):
@@ -248,6 +276,7 @@ def generateReport(results, outDir, debug):
       <script type="text/javascript" src="deps/js/jquery.tablesorter.js"></script>
       <script type="text/javascript">
       $(function() {
+         $.tablesorter.defaults.widgets = ['zebra'];
          $("table").tablesorter({debug: true});
       });
       </script>
@@ -279,8 +308,8 @@ def generateReport(results, outDir, debug):
          continue
 
       if debug:
-         print "Add result: " + result['target']['ip']
-	 
+         print 'Add result: ' + result['target']['ip']
+    
       # Display initial request 
       init = result['init']
       target = result['target']
@@ -323,9 +352,13 @@ def generateReport(results, outDir, debug):
             <td>%s</td>
             <td>%s</td>
             <td>%s</td>
-            <td></td>
-         </tr>
+            <td>
          """ % (target['protocol'], target['ip'], target['hostname'], target['port'], path, topURLs[path]['status'], topURLs[path]['title'], topURLs[path]['server'], topURLs[path]['auth'], topURLs[path]['redirectURL'])
+
+         if topURLs[path]['screenshot'] != '' and os.path.isfile(outDir + "/images/" + topURLs[path]['screenshot']):
+            print >> fd, '<a href = "images/%s" data-lightbox="screenies" data-title="%s">Screenshot</a>' % (topURLs[path]['screenshot'], targetURL.rstrip('/') + path)
+         print >> fd, '</td> </tr>'
+
    print >> fd, """
          </tbody>
       </table>
@@ -398,7 +431,7 @@ def main():
    parser = argparse.ArgumentParser(description='Yet another web discovery tool')
    parser.add_argument('--targets', required=True, dest='targets', help='File containing list of targets (http|https,ip,port,hostname)')
    parser.add_argument('--wkhtmltoimage', dest='wkhtmltoimage', default='wkhtmltoimage', help='Full path to wkhtmltoimage binary (Default: wkhtmltoimage)')
-   parser.add_argument('--agent', dest='agent', default='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17', help='User agent')
+   parser.add_argument('--agent', dest='agent', default='Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/534.34 (KHTML, like Gecko) Qt/4.8.6 Safari/534.34', help='User agent')
    parser.add_argument('--topurls', dest='topurls', default=False, action='store_true', help='Check for existance of common administrative interfaces')
    parser.add_argument('--maxprocesses', dest='maxprocesses', default=multiprocessing.cpu_count(), help='Maximum number of processes (Default: number of cores)')
    parser.add_argument('--timeout', dest='timeout', default=3, help='Javascript timeout <sec> (Default: 3)')
@@ -437,18 +470,22 @@ def main():
    # Process each target
    results = []
    if args.debug:
-      temp = []
       for target in targets:
-         temp.append(processTarget(target))
-      results.append(temp)
+         results.append(processTarget(target))
    else:
       pool = multiprocessing.Pool(args.maxprocesses)
-      r = pool.map_async(processTarget, targets, callback=results.append)
-      r.wait()
+      #r = pool.map_async(processTarget, targets, callback=results.append)
+      r = pool.map_async(processTarget, targets)
+      try:
+         results = r.get(0xFFFF)
+      except KeyboardInterrupt:
+         return
 
-   # Display results
-   generateReport(results[0], args.output, args.debug)
-   generateScreenies(results[0], args.output, args.debug)
+   # Generate results
+   if args.debug:
+      print results
+   generateReport(results, args.output, args.debug)
+   generateScreenies(results, args.output, args.debug)
 
 if __name__ == '__main__':
    main()
