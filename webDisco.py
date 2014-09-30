@@ -429,13 +429,13 @@ def generateScreenies(results, outDir, debug):
 def main():
    # Get the command line arguments
    parser = argparse.ArgumentParser(description='Yet another web discovery tool')
-   parser.add_argument('--targets', required=True, dest='targets', help='file containing list of targets (http|https,ip,port,hostname)')
+   parser.add_argument('--targets', required=True, dest='targets', help='file containing list of targets (ex. http|https,ip,port,hostname)')
    parser.add_argument('--wkhtmltoimage', dest='wkhtmltoimage', default='wkhtmltoimage', help='full path to wkhtmltoimage binary (Default: wkhtmltoimage)')
-   parser.add_argument('--agent', dest='agent', default='Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/534.34 (KHTML, like Gecko) Qt/4.8.6 Safari/534.34', help='User agent')
+   parser.add_argument('--agent', dest='agent', default='Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36', help='custom user agent (Default: Chrome on OS X)')
    parser.add_argument('--topurls', dest='topurls', default=False, action='store_true', help='check for existance of common administrative interfaces')
    parser.add_argument('--maxprocesses', dest='maxprocesses', default=multiprocessing.cpu_count(), type=int, help='maximum number of processes (Default: number of cores)')
    parser.add_argument('--timeout', dest='timeout', default=3, type=int, help='javascript timeout <sec> (Default: 3)')
-   parser.add_argument('--output', dest='output', default='webDisco', help='output directory')
+   parser.add_argument('--output', dest='output', default='webDisco', help='output directory (Default: "webDisco")')
    parser.add_argument('--proxy', dest='proxy', help='proxy Host:Port (ex. 127.0.0.1:8080)')
    parser.add_argument('--debug', dest='debug', default=False, action='store_true', help='increase verbosity')
    parser.add_argument('--version', action='version', version='%(prog)s 0.1')
