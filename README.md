@@ -23,7 +23,7 @@ export all IPs and and vhosts into appropriately formatted target list.
 usage: webDisco.py [-h] --targets TARGETS [--wkhtmltoimage WKHTMLTOIMAGE]
                    [--agent AGENT] [--topurls] [--maxprocesses MAXPROCESSES]
                    [--timeout TIMEOUT] [--output OUTPUT] [--proxy PROXY]
-                   [--debug] [--single] [--version]
+                   [--debug] [--version]
 
 Yet another web discovery tool
 
@@ -43,7 +43,6 @@ optional arguments:
   --output OUTPUT       output directory
   --proxy PROXY         proxy Host:Port (ex. 127.0.0.1:8080)
   --debug               increase verbosity
-  --single              execute in a single threaded fashion
   --version             show program's version number and exit
 ```
 
