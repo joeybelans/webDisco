@@ -30,18 +30,18 @@ Yet another web discovery tool
 
 optional arguments:
   -h, --help            show this help message and exit
-  --targets TARGETS     file containing list of targets
-                        (http|https,ip,port,hostname)
+  --targets TARGETS     file containing list of targets (ex.
+                        http|https,ip,port,hostname)
   --wkhtmltoimage WKHTMLTOIMAGE
                         full path to wkhtmltoimage binary (Default:
                         wkhtmltoimage)
-  --agent AGENT         User agent
+  --agent AGENT         custom user agent (Default: Chrome on OS X)
   --topurls             check for existance of common administrative
                         interfaces
   --maxprocesses MAXPROCESSES
                         maximum number of processes (Default: number of cores)
   --timeout TIMEOUT     javascript timeout <sec> (Default: 3)
-  --output OUTPUT       output directory
+  --output OUTPUT       output directory (Default: "webDisco")
   --proxy PROXY         proxy Host:Port (ex. 127.0.0.1:8080)
   --debug               increase verbosity
   --version             show program's version number and exit
