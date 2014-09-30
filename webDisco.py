@@ -24,6 +24,7 @@ import sys
 import os
 import re
 import requests
+import string
 from bs4 import BeautifulSoup
 
 # Verify program is executable
@@ -46,7 +47,7 @@ def is_exe(program):
 
 
 # Makes HTTP GET requests 
-def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout):
+def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout, debug):
    # Configure proxy, if necessary
    proxies = {}
    if proxyurl != None:
@@ -103,10 +104,15 @@ def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout):
    if len(r.history) > 0:
       output['redirectURL'] = r.url
    if r.text:
-      output['content'] = r.text[:500].decode("ascii", "ignore")
+      if debug:
+	 print r.text
+      #output['content'] = r.text[:500].decode("ascii", "ignore")
+      output['content'] = filter(lambda x: x in string.printable, r.text[:500])
+      if debug:
+	 print output['content']
       soup = BeautifulSoup(r.text)
       try:
-         output['title'] = soup.find('title').contents[0].decode("ascii", "ignore")
+	 output['title'] = filter(lambda x: x in string.printable, soup.find('title').contents[0])
       except:
          pass
       if soup.find_all('input', {'type':'password'}):
@@ -116,7 +122,7 @@ def httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout):
    return output
 
 # Checks for top interesting URLs
-def requestTopURLs(proxyurl, agent, protocol, ip, port, hostname, timeout, redirectURL, wkhtml, outputDir):
+def requestTopURLs(proxyurl, agent, protocol, ip, port, hostname, timeout, redirectURL, wkhtml, outputDir, debug):
    # List of URLs to be checked
    topURLs = [
    '/CFIDE/', 
@@ -143,7 +149,7 @@ def requestTopURLs(proxyurl, agent, protocol, ip, port, hostname, timeout, redir
    found = 0
    other = 0
    for path in topURLs:
-      tempOut = httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout)
+      tempOut = httpGET(proxyurl, agent, protocol, ip, port, path, hostname, timeout, debug)
 
       if (tempOut['status'] == 403 or (not (tempOut['status'] >= 400 and tempOut['status'] < 500)))  and tempOut['status'] != 0:
          # Check for custom 404s
@@ -216,7 +222,7 @@ def processTarget(params):
          print "Initial target: " + target
 
       path = '/'
-      disco['init'] = httpGET(args.proxy, args.agent, protocol, ip, port, path, hostname, args.timeout)
+      disco['init'] = httpGET(args.proxy, args.agent, protocol, ip, port, path, hostname, args.timeout, args.debug)
       if disco['init']['status'] == 0:
          if args.debug:
             print "Target failed: " + target
@@ -243,7 +249,7 @@ def processTarget(params):
       if args.topurls:
          if args.debug:
             print "Get top urls: " + target
-         disco["topURLs"] = requestTopURLs(args.proxy, args.agent, protocol, ip, port, hostname, args.timeout, disco['init']['redirectURL'], args.wkhtmltoimage, args.output)
+         disco["topURLs"] = requestTopURLs(args.proxy, args.agent, protocol, ip, port, hostname, args.timeout, disco['init']['redirectURL'], args.wkhtmltoimage, args.output, args.debug)
       else:
          disco["topURLs"] = {}
 
@@ -302,7 +308,7 @@ def generateReport(results, outDir, debug):
    </thead>
    <tbody>
    '''
-   os.system("cp -r " + sys.path[0] + "/deps " + outDir)
+   os.system("cp -r '" + sys.path[0] + "/deps' '" + outDir + "'")
    for result in results:
       if len(result) == 0:
          continue
