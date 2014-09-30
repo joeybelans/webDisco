@@ -11,35 +11,40 @@ webDisco outputs two (2) HTML files:
 - File data.html displays sortable host and connection information with links to screenshots. 
 - File screenshots.html displays thumbnails of all screenshots. 
 All screenshots can be clicked through/viewed through a shadowbox viewer for quick viewing. 
+
+If using in conjunction with Lair (https://github.com/fishnetsecurity/Lair), there is a 
+Lair script available (https://github.com/fishnetsecurity/Lair-Browser-Scripts) to 
+export all IPs and and vhosts into appropriately formatted target list. 
 ```
 
 
 ## Usage
 ```
-$ ./webDisco.py -h
-usage: webdisco.py [-h] --targets TARGETS [--wkhtmltoimage WKHTMLTOIMAGE]
+usage: webDisco.py [-h] --targets TARGETS [--wkhtmltoimage WKHTMLTOIMAGE]
                    [--agent AGENT] [--topurls] [--maxprocesses MAXPROCESSES]
                    [--timeout TIMEOUT] [--output OUTPUT] [--proxy PROXY]
-                   [--debug]
+                   [--debug] [--single] [--version]
 
 Yet another web discovery tool
 
 optional arguments:
   -h, --help            show this help message and exit
-  --targets TARGETS     File containing list of targets
+  --targets TARGETS     file containing list of targets
                         (http|https,ip,port,hostname)
   --wkhtmltoimage WKHTMLTOIMAGE
-                        Full path to wkhtmltoimage binary (Default:
+                        full path to wkhtmltoimage binary (Default:
                         wkhtmltoimage)
   --agent AGENT         User agent
-  --topurls             Check for existance of common administrative
+  --topurls             check for existance of common administrative
                         interfaces
   --maxprocesses MAXPROCESSES
-                        Maximum number of processes (Default: number of cores)
-  --timeout TIMEOUT     Javascript timeout <sec> (Default: 3)
-  --output OUTPUT       Output directory
-  --proxy PROXY         Proxy Host:Port (ex. 127.0.0.1:8080)
-  --debug               Increase verbosity in a single threaded fashion
+                        maximum number of processes (Default: number of cores)
+  --timeout TIMEOUT     javascript timeout <sec> (Default: 3)
+  --output OUTPUT       output directory
+  --proxy PROXY         proxy Host:Port (ex. 127.0.0.1:8080)
+  --debug               increase verbosity
+  --single              execute in a single threaded fashion
+  --version             show program's version number and exit
 ```
 
 ## Installation
@@ -57,6 +62,7 @@ Linux Deps: pip install -U -r requirements.txt
 
 ## Developing
 ```
+Current: v0.1
 Project code under active development
 ```
 
