@@ -188,7 +188,7 @@ def createScreenshot(wkhtmltoimage, proxyurl, outdir, protocol, ip, port, path, 
    name = name + '-' + path.lstrip('/').split('/')[0] + '.png'
 
    # Create screenshot
-   cmd = wkhtmltoimage + ' --quiet'
+   cmd = wkhtmltoimage
    if proxyurl != None:
       cmd = cmd + ' --proxy ' + proxyurl
    if hostname != '':
